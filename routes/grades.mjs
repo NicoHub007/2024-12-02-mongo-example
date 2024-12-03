@@ -38,6 +38,26 @@ router.get('/', async (req, res) => {
     else res.send(results).status(200);
 })
 
+// The show route is READ,but limiting to a specific entry
+// in this case, we'll use id to get a specific grades entry
+router.get('/:id', async (req, res) => {
+    // in the connection, remember that we have already accessed the sample_training database
+    // now we are going to access the "grades" collection in that db
+    let collection = await db.collection('grades');
 
+    // define the query
+    // in this, we are searching for a specific id
+    let query;
+    try {
+        query = { _id: new ObjectId(req.params.id) };
+    } catch (err) {
+        return res.send('Invalid id').status(400);
+    }
+    let result = await collection.findOne(query);
+
+    if (!result) res.send('not found').status(404);
+    else res.send(result).status(200);
+})
+//console.log(query);
 
 export default router;
